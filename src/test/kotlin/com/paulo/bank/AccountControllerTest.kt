@@ -1,9 +1,12 @@
 package com.paulo.bank
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -39,5 +42,23 @@ class AccountControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("\$.document").value(account.document))
             .andExpect(MockMvcResultMatchers.jsonPath("\$.phone").value(account.phone))
             .andDo(MockMvcResultHandlers.print())
+    }
+
+    @Test
+    fun `test create account`() {
+        val account = Account(name = "Test Find All", document = "123", phone = "12345")
+        val json = ObjectMapper().writeValueAsString(account)
+        accountRepository.deleteAll()
+        mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(MockMvcResultMatchers.status().isCreated)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.name").value(account.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.document").value(account.document))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.phone").value(account.phone))
+            .andDo(MockMvcResultHandlers.print())
+
+        Assertions.assertFalse(accountRepository.findAll().isEmpty())
     }
 }

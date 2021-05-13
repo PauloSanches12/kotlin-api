@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/accounts")
 class AccountController(private val repository: AccountRepository) {
+
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody account: Account): Account = repository.save(account)
 
     @GetMapping
