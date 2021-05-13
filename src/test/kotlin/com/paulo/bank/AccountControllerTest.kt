@@ -86,4 +86,16 @@ class AccountControllerTest {
         Assertions.assertTrue(findById.isPresent)
         Assertions.assertEquals(account.name, findById.get().name)
     }
+
+    @Test
+    fun `test delete account`() {
+        val account = accountRepository.save(Account(name = "Test Find All", document = "123", phone = "12345"))
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/accounts/${account.id}"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andDo(MockMvcResultHandlers.print())
+
+        val findById = accountRepository.findById(account.id!!)
+        Assertions.assertFalse(findById.isPresent)
+    }
 }
