@@ -22,6 +22,7 @@ class AccountControllerTest {
     @Test
     fun `test find all`() {
         accountRepository.save(Account(name = "Test Find All", document = "123", phone = "12345"))
+
         mockMvc.perform(MockMvcRequestBuilders.get("/accounts"))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("\$").isArray)
@@ -35,6 +36,7 @@ class AccountControllerTest {
     @Test
     fun `test find by id`() {
         val account = accountRepository.save(Account(name = "Test Find All", document = "123", phone = "12345"))
+
         mockMvc.perform(MockMvcRequestBuilders.get("/accounts/${account.id}"))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("\$.id").value(account.id))
@@ -48,7 +50,9 @@ class AccountControllerTest {
     fun `test create account`() {
         val account = Account(name = "Test Find All", document = "123", phone = "12345")
         val json = ObjectMapper().writeValueAsString(account)
+
         accountRepository.deleteAll()
+
         mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
@@ -60,5 +64,26 @@ class AccountControllerTest {
             .andDo(MockMvcResultHandlers.print())
 
         Assertions.assertFalse(accountRepository.findAll().isEmpty())
+    }
+
+    @Test
+    fun `test update account`() {
+        val account = accountRepository.save(Account(name = "Test Find All", document = "123", phone = "12345"))
+            .copy(name = "updated")
+        val json = ObjectMapper().writeValueAsString(account)
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/accounts/${account.id}")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.name").value(account.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.document").value(account.document))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.phone").value(account.phone))
+            .andDo(MockMvcResultHandlers.print())
+
+        val findById = accountRepository.findById(account.id!!)
+        Assertions.assertTrue(findById.isPresent)
+        Assertions.assertEquals(account.name, findById.get().name)
     }
 }
