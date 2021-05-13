@@ -28,4 +28,16 @@ class AccountControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("\$[0].phone").isString)
             .andDo(MockMvcResultHandlers.print())
     }
+
+    @Test
+    fun `test find by id`() {
+        val account = accountRepository.save(Account(name = "Test Find All", document = "123", phone = "12345"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/accounts/${account.id}"))
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.id").value(account.id))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.name").value(account.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.document").value(account.document))
+            .andExpect(MockMvcResultMatchers.jsonPath("\$.phone").value(account.phone))
+            .andDo(MockMvcResultHandlers.print())
+    }
 }
