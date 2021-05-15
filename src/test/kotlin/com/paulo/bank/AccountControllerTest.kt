@@ -1,6 +1,8 @@
 package com.paulo.bank
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.paulo.bank.model.Account
+import com.paulo.bank.repository.AccountRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

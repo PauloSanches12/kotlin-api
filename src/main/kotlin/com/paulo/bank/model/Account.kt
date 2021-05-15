@@ -1,4 +1,4 @@
-package com.paulo.bank
+package com.paulo.bank.model
 
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
