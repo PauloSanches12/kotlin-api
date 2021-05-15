@@ -2,15 +2,22 @@ package com.paulo.bank.service
 
 import com.paulo.bank.model.Account
 import com.paulo.bank.repository.AccountRepository
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import java.lang.RuntimeException
+import org.springframework.util.Assert
 import java.util.*
 
 @Service
 class AccountServiceImpl(private val repository: AccountRepository) : AccountService {
     override fun create(account: Account): Account {
+        Assert.hasLength(account.name, "[nome] não pode estar em branco!")
+        Assert.isTrue(account.name.length >= 5, "[nome] deve ter no minimo 5 caracteres!")
+
+        Assert.hasLength(account.document, "[document] não pode estar em branco!")
+        Assert.isTrue(account.document.length >= 11, "[document] deve ter no minimo 11 caracteres!")
+
+        Assert.hasLength(account.phone, "[phone] não pode estar em branco!")
+        Assert.isTrue(account.phone.length >= 11, "[phone] deve ter no minimo 11 caracteres!")
+
         return repository.save(account)
     }
 
@@ -32,7 +39,7 @@ class AccountServiceImpl(private val repository: AccountRepository) : AccountSer
                 document = account.document,
                 phone = account.phone
             )
-           repository.save(accountToUpdate)
+            repository.save(accountToUpdate)
         }
     }
 
